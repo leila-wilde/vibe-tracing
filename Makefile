@@ -1,5 +1,5 @@
 CC = gcc
-CFLAGS = -Wall -Wextra -pedantic -std=c11 -O2
+CFLAGS = -Wall -Wextra -pedantic -std=c11 -O3 -fopenmp
 SRCDIR = src
 TESTDIR = tests
 OUTDIR = output

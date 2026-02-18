@@ -7,12 +7,14 @@
 #include "utils.h"
 #include <stdio.h>
 #include <stdlib.h>
+#include <omp.h>
 
 /* Image dimensions */
 #define IMAGE_WIDTH 1200
 #define IMAGE_HEIGHT 800
 #define SAMPLES_PER_PIXEL 500
 #define MAX_DEPTH 50
+#define USE_OPENMP 0
 
 /* Construct a ray from origin and direction */
 ray_t ray(const vec3_t origin, const vec3_t direction) {
@@ -172,29 +174,51 @@ int main(void) {
 
     /* Write PPM header */
     fprintf(out, "P3\n%d %d\n255\n", IMAGE_WIDTH, IMAGE_HEIGHT);
+    fflush(out);
 
-    /* Render each pixel with multisampling */
-    for (int j = IMAGE_HEIGHT - 1; j >= 0; j--) {
-        fprintf(stderr, "\rScanlines remaining: %d  ", j);
-        fflush(stderr);
-
-        for (int i = 0; i < IMAGE_WIDTH; i++) {
-            vec3_t pixel_color = vec3(0.0, 0.0, 0.0);
-
-            /* Multiple samples per pixel for antialiasing */
-            for (int s = 0; s < SAMPLES_PER_PIXEL; s++) {
-                double u = (i + random_double()) / (IMAGE_WIDTH - 1);
-                double v = (j + random_double()) / (IMAGE_HEIGHT - 1);
-                ray_t r = camera_get_ray(&camera, u, v);
-                pixel_color = vec3_add(pixel_color, ray_color(r, world, MAX_DEPTH));
-            }
-
-            write_color(out, pixel_color, SAMPLES_PER_PIXEL);
-        }
+    /* Pre-allocate buffer for all pixels to avoid file synchronization issues */
+    vec3_t *pixel_buffer = malloc(IMAGE_WIDTH * IMAGE_HEIGHT * sizeof(vec3_t));
+    if (!pixel_buffer) {
+        fprintf(stderr, "Error: could not allocate pixel buffer\n");
+        fclose(out);
+        hittable_list_destroy(world);
+        return 1;
     }
+
+    /* Render each pixel with multisampling (parallelized) */
+    fprintf(stderr, "Rendering...\n");
+    #if USE_OPENMP
+    #pragma omp parallel for schedule(dynamic, 100)
+    #endif
+    for (int pixel_idx = 0; pixel_idx < IMAGE_WIDTH * IMAGE_HEIGHT; pixel_idx++) {
+        int j = IMAGE_HEIGHT - 1 - (pixel_idx / IMAGE_WIDTH);
+        int i = pixel_idx % IMAGE_WIDTH;
+        
+        vec3_t pixel_color = vec3(0.0, 0.0, 0.0);
+
+        /* Multiple samples per pixel for antialiasing */
+        for (int s = 0; s < SAMPLES_PER_PIXEL; s++) {
+            double u = (i + random_double()) / (IMAGE_WIDTH - 1);
+            double v = (j + random_double()) / (IMAGE_HEIGHT - 1);
+            ray_t r = camera_get_ray(&camera, u, v);
+            pixel_color = vec3_add(pixel_color, ray_color(r, world, MAX_DEPTH));
+        }
+
+        /* Store in buffer */
+        pixel_buffer[pixel_idx] = pixel_color;
+    }
+    fprintf(stderr, "Rendering complete. Writing file...\n");
+    fflush(stderr);
+
+    /* Write pixel buffer to file */
+    for (int idx = 0; idx < IMAGE_WIDTH * IMAGE_HEIGHT; idx++) {
+        write_color(out, pixel_buffer[idx], SAMPLES_PER_PIXEL);
+    }
+    fflush(out);
 
     fprintf(stderr, "\nDone.\n");
     fclose(out);
+    free(pixel_buffer);
     hittable_list_destroy(world);
 
     /* Clean up materials */

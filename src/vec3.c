@@ -1,6 +1,9 @@
 #include "vec3.h"
 #include <stdlib.h>
 
+/* Thread-local random state */
+static __thread unsigned int seed = 12345;
+
 /* Construct a vec3 from three doubles */
 inline vec3_t vec3(double x, double y, double z) {
     return (vec3_t){{x, y, z}};
@@ -55,7 +58,7 @@ inline vec3_t vec3_normalize(const vec3_t v) {
 
 /* Generate random double in [0, 1) */
 double random_double(void) {
-    return rand() / (RAND_MAX + 1.0);
+    return rand_r(&seed) / (RAND_MAX + 1.0);
 }
 
 /* Generate random double in [min, max) */
