@@ -9,9 +9,9 @@
 #include <stdlib.h>
 
 /* Image dimensions */
-#define IMAGE_WIDTH 256
-#define IMAGE_HEIGHT 256
-#define SAMPLES_PER_PIXEL 100
+#define IMAGE_WIDTH 1200
+#define IMAGE_HEIGHT 800
+#define SAMPLES_PER_PIXEL 500
 #define MAX_DEPTH 50
 
 /* Construct a ray from origin and direction */
@@ -85,46 +85,87 @@ int main(void) {
 
     /* Create materials */
     material_t mat_ground = lambertian_create(vec3(0.5, 0.5, 0.5));
-    material_t mat_center = lambertian_create(vec3(0.7, 0.3, 0.3));
-    material_t mat_left = dielectric_create(1.5);
-    material_t mat_right = metal_create(vec3(0.8, 0.6, 0.2), 0.0);
 
     /* Create spheres with materials */
-    sphere_t *ground = sphere_create(vec3(0.0, -100.5, -1.0), 100.0, &mat_ground);
+    sphere_t *ground = sphere_create(vec3(0.0, -1000.0, 0.0), 1000.0, &mat_ground);
     if (ground) {
         hittable_list_add(world, sphere_to_hittable(ground));
     }
 
-    sphere_t *center = sphere_create(vec3(0.0, 0.0, -1.0), 0.5, &mat_center);
+    /* Generate random scene with many spheres */
+    for (int a = -11; a < 11; a++) {
+        for (int b = -11; b < 11; b++) {
+            double choose_mat = random_double();
+            vec3_t center = vec3(a + 0.9 * random_double(), 0.2,
+                                b + 0.9 * random_double());
+
+            if (vec3_length(vec3_sub(center, vec3(4.0, 0.2, 0.0))) > 0.9) {
+                sphere_t *sphere = NULL;
+                material_t mat = {0};
+
+                if (choose_mat < 0.8) {
+                    /* Diffuse sphere */
+                    vec3_t albedo = vec3(random_double() * random_double(),
+                                        random_double() * random_double(),
+                                        random_double() * random_double());
+                    mat = lambertian_create(albedo);
+                    sphere = sphere_create(center, 0.2, &mat);
+                } else if (choose_mat < 0.95) {
+                    /* Metal sphere */
+                    vec3_t albedo = vec3(0.5 * (1.0 + random_double()),
+                                        0.5 * (1.0 + random_double()),
+                                        0.5 * (1.0 + random_double()));
+                    double fuzz = 0.5 * random_double();
+                    mat = metal_create(albedo, fuzz);
+                    sphere = sphere_create(center, 0.2, &mat);
+                } else {
+                    /* Glass sphere */
+                    mat = dielectric_create(1.5);
+                    sphere = sphere_create(center, 0.2, &mat);
+                }
+
+                if (sphere) {
+                    hittable_list_add(world, sphere_to_hittable(sphere));
+                }
+                if (mat.destroy) mat.destroy(mat.data);
+            }
+        }
+    }
+
+    /* Three main spheres */
+    material_t mat_center = lambertian_create(vec3(0.4, 0.2, 0.1));
+    sphere_t *center = sphere_create(vec3(-4.0, 1.0, 0.0), 1.0, &mat_center);
     if (center) {
         hittable_list_add(world, sphere_to_hittable(center));
     }
 
-    sphere_t *left = sphere_create(vec3(-1.0, 0.0, -1.0), 0.5, &mat_left);
-    if (left) {
-        hittable_list_add(world, sphere_to_hittable(left));
+    material_t mat_middle = dielectric_create(1.5);
+    sphere_t *middle = sphere_create(vec3(0.0, 1.0, 0.0), 1.0, &mat_middle);
+    if (middle) {
+        hittable_list_add(world, sphere_to_hittable(middle));
     }
 
-    sphere_t *right = sphere_create(vec3(1.0, 0.0, -1.0), 0.5, &mat_right);
+    material_t mat_right = metal_create(vec3(0.7, 0.6, 0.5), 0.0);
+    sphere_t *right = sphere_create(vec3(4.0, 1.0, 0.0), 1.0, &mat_right);
     if (right) {
         hittable_list_add(world, sphere_to_hittable(right));
     }
 
     /* Camera setup */
     camera_t camera = camera_create(
-        vec3(0.0, 0.0, 0.0),           /* lookfrom */
-        vec3(0.0, 0.0, -1.0),          /* lookat */
+        vec3(13.0, 2.0, 3.0),          /* lookfrom */
+        vec3(0.0, 0.0, 0.0),           /* lookat */
         vec3(0.0, 1.0, 0.0),           /* vup */
-        90.0,                           /* vfov (degrees) */
+        20.0,                           /* vfov (degrees) */
         (double)IMAGE_WIDTH / IMAGE_HEIGHT, /* aspect ratio */
-        0.0,                            /* aperture (no defocus) */
-        1.0                             /* focus distance */
+        0.1,                            /* aperture (depth of field) */
+        10.0                            /* focus distance */
     );
 
     /* Open output file */
-    FILE *out = fopen("output/materials.ppm", "w");
+    FILE *out = fopen("output/final.ppm", "w");
     if (!out) {
-        fprintf(stderr, "Error: could not open output/materials.ppm\n");
+        fprintf(stderr, "Error: could not open output/final.ppm\n");
         hittable_list_destroy(world);
         return 1;
     }
@@ -159,7 +200,7 @@ int main(void) {
     /* Clean up materials */
     if (mat_ground.destroy) mat_ground.destroy(mat_ground.data);
     if (mat_center.destroy) mat_center.destroy(mat_center.data);
-    if (mat_left.destroy) mat_left.destroy(mat_left.data);
+    if (mat_middle.destroy) mat_middle.destroy(mat_middle.data);
     if (mat_right.destroy) mat_right.destroy(mat_right.data);
 
     return 0;
