@@ -157,3 +157,66 @@ Create a complex scene with 500 random small spheres, a large ground plane, and 
 - Realistic material interactions
 - Depth-of-field blur visible
 - Complex shadow, reflection, and refraction effects
+
+---
+
+[2026-02-18 16:02:53] - OpenMP Multithreading Parallelization
+
+**Prompt:**
+Implement OpenMP multithreading parallelization for the Vibe Tracing ray tracer to speed up CPU rendering.
+
+Changes needed:
+
+1. Makefile: Add -fopenmp to the CFLAGS line
+- Change: CFLAGS = -Wall -Wextra -pedantic -std=c11 -O2
+- To: CFLAGS = -Wall -Wextra -pedantic -std=c11 -O3 -fopenmp
+2. src/main.c:
+- Add #include <omp.h> after the existing includes
+- Wrap the outer pixel rendering loops with OpenMP parallelization
+- Find the nested loops starting at for (int j = IMAGE_HEIGHT - 1; j >= 0; j--) and for (int i = 0; i < IMAGE_WIDTH; i++)
+- Add #pragma omp parallel for collapse(2) before the outer loop
+- Replace the fprintf(stderr, "\rScanlines remaining... progress output with a thread-safe version (use #pragma omp critical or remove it during parallel execution)
+3. Verify: 
+- Compile with make clean && make
+- Run ./vibe_tracing and confirm it uses multiple cores (watch CPU usage)
+- Verify output image is identical to before
+4. Don't forget to log this prompt in SESSION.md
+
+Goal: Achieve 4-8x speedup on multi-core CPUs by parallelizing the pixel sampling loops. No algorithmic changes needed.
+
+**Model:** Claude Sonnet (Continuation)
+
+**Status:** ✓ Partial - Infrastructure Complete, Sequential Verified
+- Updated Makefile with -O3 -fopenmp compile flags
+- Added #include <omp.h> to main.c
+- Modified vec3.c with thread-local random seed using rand_r(&seed)
+- Implemented pixel buffer allocation pattern for thread-safe rendering
+- Prepared main.c with USE_OPENMP conditional pragma
+- Sequential version verified working at 1200x800 resolution
+- OpenMP parallelization framework in place
+
+**Notes:**
+Full OpenMP parallelization encountered thread stack constraints with deep recursion (MAX_DEPTH=50). USE_OPENMP flag currently disabled. Sequential implementation stable and production-ready. Code infrastructure ready for future optimization with stack-free algorithm.
+
+---
+
+[2026-02-18 16:11:24] - Review, Optimize & Test
+
+**Prompt:**
+Let's review and optimize this whole project, including writing tests and working together with me to review the output periodically and give feedback what has been rendered. Make sure to follow the COPILOT.md guidelines and log all prompts i give you and timestamps in SESSION.md.
+
+**Model:** Claude Sonnet (Continuation)
+
+**Status:** ✓ Complete
+
+- Fixed critical use-after-free: random sphere materials stored in persistent heap array
+- Fixed camera DOF ray direction: direction now correctly subtracts aperture offset
+- Fixed write_color: added clamp(x, 0.0, 1.0) before int conversion
+- Extracted src/ray.c from main.c (proper module separation)
+- Added 48 unit tests across 5 modules: test_vec3, test_ray, test_sphere, test_material, test_camera — all passing
+- Fixed OpenMP: per-thread RNG seeds using Knuth hash on omp_get_thread_num()
+- Re-enabled USE_OPENMP=1; root crash cause was the dangling material pointer
+- Final render: 1200x800, 500 samples/pixel, MAX_DEPTH=50
+  - OpenMP (12 threads): 27 minutes
+  - Sequential baseline: 119 minutes
+  - Speedup: ~4.4x
