@@ -1,8 +1,12 @@
 #include "vec3.h"
 #include <stdlib.h>
 
-/* Thread-local random state */
-static __thread unsigned int seed = 12345;
+#ifdef _OPENMP
+#include <omp.h>
+#endif
+
+/* Thread-local random state, lazily initialized per thread */
+static __thread unsigned int seed = 0;
 
 /* Construct a vec3 from three doubles */
 inline vec3_t vec3(double x, double y, double z) {
@@ -58,6 +62,16 @@ inline vec3_t vec3_normalize(const vec3_t v) {
 
 /* Generate random double in [0, 1) */
 double random_double(void) {
+    if (!seed) {
+        /* Give each thread a unique starting seed using Knuth's
+         * multiplicative hash on thread id so samples don't correlate */
+#ifdef _OPENMP
+        seed = (unsigned int)(omp_get_thread_num() + 1) * 0x9e3779b9u;
+#else
+        seed = 12345u;
+#endif
+        if (!seed) seed = 1u; /* rand_r is undefined for seed==0 */
+    }
     return rand_r(&seed) / (RAND_MAX + 1.0);
 }
 

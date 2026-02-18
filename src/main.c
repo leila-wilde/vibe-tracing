@@ -14,7 +14,7 @@
 #define IMAGE_HEIGHT 800
 #define SAMPLES_PER_PIXEL 500
 #define MAX_DEPTH 50
-#define USE_OPENMP 0
+#define USE_OPENMP 1
 
 /* Calculate color based on ray-scene intersection with recursion */
 static vec3_t ray_color(const ray_t r, const hittable_list_t *world, int depth) {
