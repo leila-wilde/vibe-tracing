@@ -5,16 +5,20 @@ TESTDIR = tests
 OUTDIR = output
 
 # Source files
-VEC3_OBJS = $(SRCDIR)/vec3.o
-TEST_VEC3_SRC = $(TESTDIR)/test_vec3.c
+COMMON_OBJS = $(SRCDIR)/vec3.o
+MAIN_OBJS = $(COMMON_OBJS) $(SRCDIR)/main.o
 
-.PHONY: all clean test
+.PHONY: all clean test run
 
 all: vibe_tracing
 
-# Main program target (will be used in later steps)
-vibe_tracing: $(VEC3_OBJS) $(SRCDIR)/main.o
+# Main program target
+vibe_tracing: $(MAIN_OBJS)
 	$(CC) $(CFLAGS) -o $@ $^ -lm
+
+# Run the main program
+run: vibe_tracing
+	./vibe_tracing
 
 $(SRCDIR)/%.o: $(SRCDIR)/%.c
 	$(CC) $(CFLAGS) -c -o $@ $<
@@ -22,7 +26,7 @@ $(SRCDIR)/%.o: $(SRCDIR)/%.c
 # Unit tests
 test: test_vec3
 
-test_vec3: $(VEC3_OBJS) $(TESTDIR)/test_vec3.o
+test_vec3: $(COMMON_OBJS) $(TESTDIR)/test_vec3.o
 	$(CC) $(CFLAGS) -o $@ $^ -lm
 	./test_vec3
 
