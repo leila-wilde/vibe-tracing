@@ -16,16 +16,6 @@
 #define MAX_DEPTH 50
 #define USE_OPENMP 0
 
-/* Construct a ray from origin and direction */
-ray_t ray(const vec3_t origin, const vec3_t direction) {
-    return (ray_t){origin, direction};
-}
-
-/* Get point at parameter t along the ray */
-vec3_t ray_at(const ray_t r, double t) {
-    return vec3_add(r.origin, vec3_mul(r.direction, t));
-}
-
 /* Calculate color based on ray-scene intersection with recursion */
 static vec3_t ray_color(const ray_t r, const hittable_list_t *world, int depth) {
     hit_record_t rec = {0};
