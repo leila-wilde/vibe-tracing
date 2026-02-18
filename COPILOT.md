@@ -1,326 +1,152 @@
-# COPILOT.md - AI Agent Workflow Guide
-
-**MiniVibes Challenge**: Building ambitious projects in limited time with constrained resources.
-
----
-
-## Table of Contents
-1. [Challenge Overview](#challenge-overview)
-2. [Project Workflow](#project-workflow)
-3. [Specification Requirements](#specification-requirements)
-4. [Development Constraints](#development-constraints)
-5. [Resource Budget](#resource-budget)
-6. [Git Workflow](#git-workflow)
-7. [Prompting Guidelines](#prompting-guidelines)
-8. [Session Documentation](#session-documentation)
-
----
-
-## Challenge Overview
-
-### The MiniVibes Challenge
-Each project follows strict constraints designed to teach **vibe coding** - the skill of effectively collaborating with AI agents.
-
-### Key Metrics
-- **Time**: 1 day per project
-- **Token Budget**: Limited (use mini models with 0.33x multiplier mostly)
-- **Premium Requests**: 1 per project/day maximum
-- **Goal**: Production-quality, feature-complete applications
-
-### Core Philosophy
-> **"Premium Is Scarce. Skill Is Not."**
-
-Excellence comes from smart prompting, strategic use of resources, and understanding when to use premium vs. mini models.
-
----
-
-## Project Workflow
-
-### Phase 1: Specification (Use mini model)
-**Goal**: Complete, validated specification before any coding.
-
-The agent must produce a **comprehensive specification** that includes:
-
-1. **Project Objective**
-   - Clear description of what's being built
-   - User-facing features and behaviors
-   - Success criteria
-
-2. **Functional Breakdown**
-   - Front-end components and their responsibilities
-   - Back-end services (if applicable)
-   - APIs and data flow
-   - External integrations
-
-3. **Technical Stack**
-   - Languages, frameworks, libraries
-   - Build tools, development tools, testing frameworks
-   - Database schema (if applicable)
-   - Package manager and version constraints
-
-4. **File Structure & Organization**
-   - Complete directory layout
-   - Naming conventions
-   - Module boundaries
-
-5. **Development Strategy**
-   - Order of implementation (what to build first)
-   - Dependency graph (what must exist before what)
-   - Validation checkpoints
-   - Integration points
-
-6. **Rendering & Fidelity Rules**
-   - Visual/behavioral targets (link to reference if applicable)
-   - Acceptance criteria for each module
-   - Performance targets (if relevant)
-   - Browser/environment requirements
-
-7. **Resource Constraints**
-   - How premium requests will be used
-   - Mini model tasks
-   - Token-saving strategies
-
-**Validation Gate**: Human must review and approve specification before Phase 2 begins.
-
----
-
-### Phase 2: Development (Use mini models primarily)
-**Goal**: Build features iteratively within token budget.
-
-**Guidelines for Agent**:
-
-1. **Implement in Priority Order**
-   - Follow the specification's development strategy
-   - Build vertical slices (feature-complete, end-to-end functionality)
-   - Don't start new features until current ones are stable
-
-2. **Test Continuously**
-   - Run tests before each commit
-   - Verify features match fidelity rules
-   - Get human approval for major features
-
-3. **Keep Context Clean**
-   - Reference the specification frequently
-   - Don't diverge from spec without approval
-   - Summarize progress in commit messages
-
-4. **Commit Frequently with Quality Messages**
-   - One logical feature per commit
-   - Clear, descriptive commit messages
-   - Include reference to specification if relevant
-   - Use conventional commits: `feat:`, `fix:`, `refactor:`, `docs:`, `test:`
-
-5. **Use Premium Requests Strategically**
-   - Only 1 premium request per day
-   - Reserve for: architecture decisions, complex algorithms, debugging stuck issues
-   - Document exactly what the premium request was used for in SESSION.md
-
----
-
-### Phase 3: Refinement & Polish (Use mini models)
-**Goal**: Address edge cases, improve UX, document code.
-
-**If time permits**:
-- Add error handling
-- Improve error messages
-- Polish UI/UX
-- Add comments to complex code
-- Update documentation
-
----
-
-### Throughout development 
-**Goal**: Document everything for submission.
-
-Create `SESSION.md` - a record of all prompts. 
-Run `/session` command and include output. 
-
-**[Timestamp] - Specification Request**
-```
-[Prompt will be logged here]
-[Model: Mini]
-[Status: Completed/In Progress]
-```
-
-**[Timestamp] - [Feature Name]**
-```
-[Prompt will be logged here]
-[Model: Mini/Premium]
-[Status: Completed/In Progress]
----
-
-## Specification Requirements
-
-Every project MUST include a complete specification before development begins which the developers will oversee and finalise.
-
-### Template for Specification
-
-```markdown
-# [Project Name] - Specification
-
-## 1. Project Overview
-[Brief description of what's being built]
-
-## 2. Functional Breakdown
-### Frontend
-- Component A: Responsibilities, inputs, outputs
-- Component B: Responsibilities, inputs, outputs
-...
-
-### Backend (if applicable)
-- Service A: Purpose, endpoints, data contracts
-- Service B: Purpose, endpoints, data contracts
-...
-
-## 3. Technical Stack
-- Language: [Version]
-- Framework: [Version]
-- Build Tool: [Tool]
-- Testing: [Framework]
-- Database: [Type and schema if applicable]
-- Other dependencies: [List with versions]
-
-## 4. File Structure
-\`\`\`
-src/
-├── components/
-│   ├── ComponentA.js
-│   └── ComponentB.js
-├── services/
-│   └── api.js
-├── utils/
-│   └── helpers.js
-└── index.js
-\`\`\`
-
-## 5. Development Strategy
-### Phase 1: Foundation
-1. Set up project structure
-2. Install and configure tools
-3. Create base components
-
-### Phase 2: Core Features
-1. Feature A
-2. Feature B
-3. Feature C
-
-### Phase 3: Polish
-1. Error handling
-2. UI refinements
-3. Documentation
-
-## 6. Rendering & Fidelity Rules
-- [Reference to original project if copying]
-- Visual target: [Description or link]
-- Behavioral requirements: [List]
-- Performance target: [Metrics if applicable]
-
-## 7. Resource Plan
-- Premium requests: 1 (for [specific purpose])
-- Mini model usage: [Phases 1, 2, 3]
-- Estimated token usage: [If known]
-```
-
----
-
-## Development Constraints
-
-### Hard Requirements
-✅ **Must Have**:
-- `COPILOT.md` documenting all prompts and interactions
-- Git history with intelligent, descriptive commits
-- All code generated by AI agent (no copy-paste from external sources)
-- Dockerized application (working Docker setup)
-- `SESSION.md` at end of day
-
-### Soft Requirements (Bonus)
-🎁 **Nice to Have**:
-- Unit tests
-- Security best practices (no SQL injection, XSS, input validation)
-- Consistent code formatting with automated tools
-- Database usage (relational or NoSQL) when appropriate
-- Multiple agents with Git worktrees
-
-### Code Quality Standards
-- No hardcoded values (use constants/config)
-- Functions do one thing well
-- Comments only for "why", not "what"
-- Error handling for edge cases
-- Consistent naming conventions
-
----
-
-## Resource Budget
-
-### Daily Resource Allocation
-
-| Phase | Model | Purpose |
-|-------|-------|---------|
-| Specification | Mini | Write complete spec, get feedback, iterate |
-| Development | Mini | 90% of coding tasks |
-| Development | Premium | 1 request - use strategically |
-| Polish | Mini | Error handling, docs, UX improvements |
-| Wrap-up | Mini | Final docs, SESSION.md |
-
-### Token-Saving Strategies
-
-1. **Be Specific in Prompts**
-   - Include exact file paths
-   - Reference spec sections, don't repeat them
-   - Use code snippets instead of descriptions
-
-2. **Batch Related Tasks**
-   - Group similar fixes into one prompt
-   - Create multiple files in single request
-   - Ask for multiple functions at once
-
-3. **Reuse Context**
-   - Keep specification available
-   - Reference previous solutions
-   - Don't ask same questions twice
-
-4. **Incremental Development**
-   - Build and test small pieces
-   - Don't ask for entire features at once
-   - Integrate gradually
-
----
-
-## Git Workflow
-
-### Commit Message Format
-
+# COPILOT.md - AI Agent Instructions
+
+This file defines the interaction protocol, coding standards, and workflow for AI agents collaborating on the Vibe Tracing project.
+
+## Project overview
+
+**Vibe Tracing** is a C-based ray tracing engine built in one day through AI-assisted development. The project follows the "Ray Tracing in One Weekend" series and implements a complete path tracer with global illumination, reflections, and refractions.
+
+For full technical details, see `Specification.md`.
+
+## Core principles
+
+- **All code generated by AI agent** (no copy-paste from external sources without attribution)
+- **Human review & approval** required before moving to the next phase
+- **Token efficiency**: use mini models (0.33x multiplier) for most work; one premium request available
+- **Transparent prompting**: all interactions logged in `SESSION.md`
+- **Clean separation**: instructions in `COPILOT.md`, session history in `SESSION.md`
+
+## Code style guidelines
+
+Follow standard C best practices (based on Linux kernel style guide):
+
+### Naming conventions
+- **Functions & variables**: `snake_case` (e.g., `random_double()`, `hit_record`)
+- **Constants & macros**: `UPPER_SNAKE_CASE` (e.g., `MAX_DEPTH`, `PI`)
+- **Type definitions**: `snake_case_t` suffix (e.g., `vec3_t`, `ray_t`)
+
+### Formatting
+- **Indentation**: 4 spaces (no tabs)
+- **Line length**: Maximum 100 characters
+- **Braces**: K&R style (opening brace on same line)
+  ```c
+  if (condition) {
+      // code
+  }
+  ```
+- **Comments**: clear and concise; use `//` for line comments, `/* */` for blocks
+- **Documentation**: add function documentation in `.h` files describing parameters and return values
+
+### Memory & performance
+- **Use `const`** for immutable parameters and pointers to large structs
+- **Use `static`** for internal functions (file-local scope)
+- **Use `inline`** for small, frequently-called math utilities
+- **Avoid global variables** except for constants
+- **Cleanup**: always provide cleanup functions for dynamically allocated resources
+
+### Modularity
+- **One responsibility per module** (vec3, ray, camera, material, etc.)
+- **Clear interfaces**: Headers expose public functions; implementations use static helpers
+- **Encapsulation**: Implementation details stay in .c files
+
+## Testing guidelines
+
+Each development step must include:
+
+### 1. Compilation testing
+- Code must compile with `make` without warnings
+- Use `gcc -Wall -Wextra -pedantic` flags to catch issues early
+
+### 2. Unit tests
+- Create `tests/` directory with unit test files for core modules
+- Test math operations (vec3 dot product, cross product, normalization)
+- Test ray-sphere intersection logic
+- Test material scatter functions
+- Use a simple assertion-based test framework (e.g., custom `assert_equal()` macro)
+
+### 3. Visual validation
+- Generate test PPM images at each step to verify correctness
+- Images should be output to `output/` directory
+- At minimum: gradient background (step 2), single sphere (step 3), antialiased image (step 4), final scene (step 6)
+- Verify output dimensions and format are correct
+
+### 4. Integration testing
+- Render a simple scene to verify the full pipeline works end-to-end
+- Check that the final image is visually reasonable (bright areas, shadows, reflections)
+
+## Git & commit guidelines
+
+Follow the Conventional Commits specification. After completing each step or fixing a bug, suggest a commit with:
+
+### Commit types
+- `feat`: New feature (e.g., `feat: add glass material refraction`)
+- `fix`: Bug fix (e.g., `fix: resolve sphere intersection overflow`)
+- `docs`: Documentation updates
+- `refactor`: Code changes (no bug fix or feature)
+- `style`: Formatting, linting
+- `test`: Unit test additions or updates
+- `chore`: Build, dependency, or config changes
+
+### Commit message format
 ```
 <type>(<scope>): <subject>
 
 <body>
 
-<footer>
-
-Co-authored-by: Copilot <223556219+Copilot@users.noreply.github.com>
+*commit co-authored-by Copilot as part of a a 'vibe-coding educational project*
 ```
 
-### Types
-- `feat`: New feature
-- `fix`: Bug fix
-- `refactor`: Code restructuring without behavioral change
-- `docs`: Documentation changes
-- `style`: Formatting, linting changes
-- `test`: Test additions or updates
-- `chore`: Build, dependency, config changes
-
-### Examples
+**example:**
 ```
-feat(game-engine): implement track rendering with Three.js
-fix(physics): correct collision detection on curves
-refactor(ui): extract button component for reusability
-docs(setup): add Docker usage instructions
-test(physics): add collision test suite
+feat(materials): implement glass material with Schlick's approximation
+
+Add Dielectric material type with proper refraction using Snell's law
+and Schlick's fresnel approximation for reflectance.
+
+*commit co-authored-by Copilot as part of a a 'vibe-coding educational project*
 ```
 
-### Commit Discipline
-- Commit after each working feature
-- Don't commit broken code
+### Commit discipline
+- Commit after each working feature (not broken intermediate states)
 - One logical change per commit
-- Write clear, actionable messages
+- Clear, concise messages describing the "what" and "why"
+- If a commit fixes an issue, reference it (e.g., "Fixes #5")
 
+## Development workflow
+
+1. **Receive prompt** from human with step-by-step instructions
+2. **Implement feature** following all code style and modularity guidelines
+3. **Compile & test** (unit tests + visual validation)
+4. **Create clean commit(s)** with conventional message
+5. **Wait for human review** before proceeding to next step
+
+## Documentation & session logging
+
+All interactions must be logged in `SESSION.md` in the following format:
+
+```
+[timestamp] - [feature/task description]
+
+**Prompt:**
+[The exact prompt sent to the model]
+
+**Model:** [Model name, e.g., GPT-4o, Claude 3.5 Sonnet, Haiku]
+```
+
+**example:**
+```
+[2026-02-18 11:22:39] - Step 1: Foundation & math module
+
+**Prompt:**
+Create a C11 header vec3.h and implementation vec3.c for 3D vector math. Include basic operations (add, sub, mul, div, dot, cross, length) and utilities for random double generation and random unit vectors. Ensure all functions are efficient and follow K&R style.
+
+**Model:** Claude 3.5 Haiku
+```
+
+## Resources
+
+- **Specification**: `Specification.md` — complete technical requirements
+- **README**: `README.md` — project overview and context
+- **Build**: `Makefile` — compile with `make` or `make clean`
+- **Output**: `output/` — rendered .ppm images
+- **Tests**: `tests/` — unit tests (create as needed)
