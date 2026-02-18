@@ -59,5 +59,5 @@ ray_t camera_get_ray(const camera_t *cam, double u, double v) {
         vec3_sub(vec3_add(cam->lower_left_corner,
                          vec3_add(vec3_mul(cam->horizontal, u),
                                  vec3_mul(cam->vertical, v))),
-                cam->origin));
+                vec3_add(cam->origin, offset)));
 }

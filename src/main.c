@@ -68,9 +68,9 @@ static void write_color(FILE *out, const vec3_t color, int samples) {
     g = sqrt(g);
     b = sqrt(b);
 
-    int ir = (int)(255.999 * r);
-    int ig = (int)(255.999 * g);
-    int ib = (int)(255.999 * b);
+    int ir = (int)(255.999 * clamp(r, 0.0, 1.0));
+    int ig = (int)(255.999 * clamp(g, 0.0, 1.0));
+    int ib = (int)(255.999 * clamp(b, 0.0, 1.0));
     fprintf(out, "%d %d %d\n", ir, ig, ib);
 }
 
@@ -94,6 +94,15 @@ int main(void) {
         hittable_list_add(world, sphere_to_hittable(ground));
     }
 
+    /* Persistent material storage for random spheres (max 22x22 = 484) */
+    material_t *random_mats = malloc(484 * sizeof(material_t));
+    if (!random_mats) {
+        fprintf(stderr, "Error: could not allocate random materials\n");
+        hittable_list_destroy(world);
+        return 1;
+    }
+    int num_random_mats = 0;
+
     /* Generate random scene with many spheres */
     for (int a = -11; a < 11; a++) {
         for (int b = -11; b < 11; b++) {
@@ -111,7 +120,6 @@ int main(void) {
                                         random_double() * random_double(),
                                         random_double() * random_double());
                     mat = lambertian_create(albedo);
-                    sphere = sphere_create(center, 0.2, &mat);
                 } else if (choose_mat < 0.95) {
                     /* Metal sphere */
                     vec3_t albedo = vec3(0.5 * (1.0 + random_double()),
@@ -119,17 +127,19 @@ int main(void) {
                                         0.5 * (1.0 + random_double()));
                     double fuzz = 0.5 * random_double();
                     mat = metal_create(albedo, fuzz);
-                    sphere = sphere_create(center, 0.2, &mat);
                 } else {
                     /* Glass sphere */
                     mat = dielectric_create(1.5);
-                    sphere = sphere_create(center, 0.2, &mat);
                 }
+
+                /* Store material in persistent array so pointer remains valid */
+                random_mats[num_random_mats] = mat;
+                sphere = sphere_create(center, 0.2, &random_mats[num_random_mats]);
+                num_random_mats++;
 
                 if (sphere) {
                     hittable_list_add(world, sphere_to_hittable(sphere));
                 }
-                if (mat.destroy) mat.destroy(mat.data);
             }
         }
     }
@@ -226,6 +236,10 @@ int main(void) {
     if (mat_center.destroy) mat_center.destroy(mat_center.data);
     if (mat_middle.destroy) mat_middle.destroy(mat_middle.data);
     if (mat_right.destroy) mat_right.destroy(mat_right.data);
+    for (int i = 0; i < num_random_mats; i++) {
+        if (random_mats[i].destroy) random_mats[i].destroy(random_mats[i].data);
+    }
+    free(random_mats);
 
     return 0;
 }
