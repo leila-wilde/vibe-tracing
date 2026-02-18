@@ -43,11 +43,25 @@ Malgré ces limitations, l'idée est de créer des projets riches en fonctionnal
 vibe-tracing/
 ├── README.md              # Ce fichier
 ├── Specification.md       # Spécification technique du projet
+├── LICENSE                # Licence du projet
+├── COPILOT.md             # Instructions pour l'agent
+├── SESSION.md             # Journal de session
 ├── docs/
 │   ├── MiniVibesConsigne.md
 │   └── minivibes.png
-├── COPILOT.md             # Instructions pour l'agent
-└── SESSION.md             # Journal de session
+├── src/
+│   ├── main.c             # Point d'entrée et boucle de rendu
+│   ├── vec3.h/c           # Utilitaires de mathématiques vectorielles
+│   ├── ray.h              # Définition du rayon
+│   ├── camera.h/c         # Logique de caméra et viewport
+│   ├── material.h/c       # Logique de diffusion (scatter)
+│   ├── hittable.h         # Interface abstraite pour les objets
+│   ├── sphere.h/c         # Implémentation de la sphère
+│   └── utils.h            # Constantes et utilitaires aléatoires
+├── tests/                 # Tests unitaires
+│   └── test_vec3.c
+├── output/                # Images rendues (.ppm)
+└── Makefile               # Système de compilation
 ```
 
 ## Compétences
@@ -116,11 +130,25 @@ Despite these limitations, the idea is to create feature-rich, production-qualit
 vibe-tracing/
 ├── README.md              # This file
 ├── Specification.md       # Technical project specification
+├── LICENSE                # Project license
+├── COPILOT.md             # Agent instructions
+├── SESSION.md             # Session log
 ├── docs/
 │   ├── MiniVibesConsigne.md
 │   └── minivibes.png
-├── COPILOT.md             # Agent instructions
-└── SESSION.md             # Session log
+├── src/
+│   ├── main.c             # Entry point and render loop
+│   ├── vec3.h/c           # Vector math utilities
+│   ├── ray.h              # Ray definition
+│   ├── camera.h/c         # Camera and viewport logic
+│   ├── material.h/c       # Scatter logic
+│   ├── hittable.h         # Abstract interface for objects
+│   ├── sphere.h/c         # Sphere implementation
+│   └── utils.h            # Constants and random helpers
+├── tests/                 # Unit tests
+│   └── test_vec3.c
+├── output/                # Rendered images (.ppm)
+└── Makefile               # Build system
 ```
 
 ## Skills
