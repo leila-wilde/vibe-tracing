@@ -32,6 +32,7 @@ test_ray
 test_sphere
 test_material
 test_camera
+*.exe
 
 # debug files
 *.dSYM/
